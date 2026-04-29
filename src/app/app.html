@@ -1,11 +1,14 @@
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-<!-- * * * * * * * * * * * The content below * * * * * * * * * * * -->
-<!-- * * * * * * * * * * is only a placeholder * * * * * * * * * * -->
-<!-- * * * * * * * * * * and can be replaced.  * * * * * * * * * * -->
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-<!-- * * * * * * * * * Delete the template below * * * * * * * * * -->
-<!-- * * * * * * * to get started with your project! * * * * * * * -->
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+<nav class="navbar navbar-expand navbar-dark bg-dark px-3" *ngIf="account">
+  <a class="navbar-brand" routerLink="/">Home</a>
+  <div class="navbar-nav">
+    <a class="nav-item nav-link" routerLink="/profile">Profile</a>
+    <a class="nav-item nav-link" routerLink="/admin" *ngIf="account.role === Role.Admin">Admin</a>
+    <a class="nav-item nav-link" (click)="logout()" style="cursor:pointer">Logout</a>
+  </div>
+</nav>
+<div class="container pt-4 pb-4">
+  <router-outlet></router-outlet>
+</div>
 
 <style>
   :host {
