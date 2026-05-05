@@ -1,59 +1,120 @@
-# AngularAuthBoilerplate
+# IPT 2026 Angular Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.8.
+Angular 21 Auth Boilerplate — Email Sign Up with Verification, Authentication & Forgot Password.
 
-## Development server
+## Features
+- Email sign up & verification
+- JWT authentication with refresh tokens (auto-renews 1 min before expiry)
+- Role-based access (Admin / User)
+- Forgot password & reset password
+- Profile view & update
+- Admin panel — manage all accounts
+- **Fake backend** (enabled in dev, disabled in production)
 
-To start a local development server, run:
-
-```bash
-ng serve
-```
-
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Quick Start (Local)
 
 ```bash
-ng generate component component-name
+npm install
+npm start
+# → http://localhost:4200
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+The app runs with a **fake backend** by default — no real API needed.  
+After registering, a "verification email" link appears on-screen — click it to verify.  
+The **first account** created becomes Admin.
+
+---
+
+## Project Structure
+
+```
+src/app/
+├── _components/        alert.component (global alerts)
+├── _helpers/           app.initializer, auth.guard, jwt.interceptor,
+│                       error.interceptor, fake-backend, must-match.validator
+├── _models/            account, alert, role
+├── _services/          account.service, alert.service
+├── account/            login, register, verify-email, forgot-password, reset-password
+├── admin/              overview, subnav
+│   └── accounts/       list, add-edit
+├── home/               home page
+├── profile/            details, update
+├── app.component.*     root component + nav bar
+├── app.module.ts       root module (fake backend toggle)
+└── app-routing.module.ts
+src/environments/
+├── environment.ts          dev  → http://localhost:4000
+└── environment.prod.ts     prod → https://ipt-2026-backend.onrender.com
+```
+
+---
+
+## Connecting to the Real Backend
+
+When running against the real Node.js/MySQL API, the fake backend is automatically
+disabled in production builds (`environment.production === true`).
+
+For local development against a real backend, remove `fakeBackendProvider` from
+`src/app/app.module.ts`.
+
+---
+
+## Build for Production
 
 ```bash
-ng generate --help
+npm run build
+# Output: dist/ipt-2026-frontend/
 ```
 
-## Building
+---
 
-To build the project run:
+## Deploy to Render (Static Site)
 
-```bash
-ng build
+| Setting | Value |
+|---------|-------|
+| Service type | Static Site |
+| Branch | main |
+| Build command | `npm ci && npm run build` |
+| Publish directory | `dist/ipt-2026-frontend` |
+
+**SPA Routing (required):**  
+Render → Redirects/Rewrites → Add rule:
+- Source: `/*`
+- Destination: `/index.html`
+- Action: **Rewrite** *(not Redirect — Rewrite is required for email verify links to work)*
+
+---
+
+## Environment Variables
+
+Production `environment.prod.ts` points to:
+```
+apiUrl: 'https://ipt-2026-backend.onrender.com'
+```
+Update this to your own deployed backend URL before deploying.
+
+### Backend must have (for cookie auth to work):
+```
+CORS_ORIGIN=https://<your-render-frontend-domain>
+COOKIE_SECURE=true
+COOKIE_SAMESITE=lax
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+---
 
-## Running unit tests
+## Routes
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+| Route | Description | Guard |
+|-------|-------------|-------|
+| `/` | Home | Auth |
+| `/account/login` | Login | Public |
+| `/account/register` | Register | Public |
+| `/account/verify-email?token=...` | Verify email | Public |
+| `/account/forgot-password` | Forgot password | Public |
+| `/account/reset-password?token=...` | Reset password | Public |
+| `/profile` | View profile | Auth |
+| `/profile/update` | Edit profile | Auth |
+| `/admin` | Admin overview | Admin only |
+| `/admin/accounts` | Manage accounts | Admin only |
+| `/admin/accounts/add` | Add account | Admin only |
+| `/admin/accounts/edit/:id` | Edit account | Admin only |

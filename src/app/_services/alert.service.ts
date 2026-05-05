@@ -2,33 +2,40 @@ import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
-export class Alert {
-  id: string = 'default';
-  type!: AlertType;
-  message!: string;
-  autoClose!: boolean;
-  keepAfterRouteChange!: boolean;
-  fade!: boolean;
-}
-
-export enum AlertType { Success, Error, Info, Warning }
+import { Alert, AlertOptions, AlertType } from '@app/_models';
 
 @Injectable({ providedIn: 'root' })
 export class AlertService {
-  private subject = new Subject<Alert | null>();
+    private subject = new Subject<Alert>();
+    private defaultId = 'default-alert';
 
-  onAlert(id = 'default'): Observable<Alert | null> {
-    return this.subject.asObservable().pipe(filter(x => x?.id === id));
-  }
-  success(message: string, options?: any) { this.alert({ ...options, type: AlertType.Success, message }); }
-  error(message: string, options?: any) { this.alert({ ...options, type: AlertType.Error, message }); }
-  info(message: string, options?: any) { this.alert({ ...options, type: AlertType.Info, message }); }
-  warn(message: string, options?: any) { this.alert({ ...options, type: AlertType.Warning, message }); }
-  clear(id = 'default') { this.subject.next(null); }
-  private alert(alert: Partial<Alert>) {
-    this.subject.next({
-      id: 'default', autoClose: true, keepAfterRouteChange: false, fade: false,
-      ...alert
-    } as Alert);
-  }
+    onAlert(id = this.defaultId): Observable<Alert> {
+        return this.subject.asObservable().pipe(filter(x => x && x.id === id));
+    }
+
+    success(message: string, options?: AlertOptions) {
+        this.alert(new Alert({ ...options, type: AlertType.Success, message }));
+    }
+
+    error(message: string, options?: AlertOptions) {
+        this.alert(new Alert({ ...options, type: AlertType.Error, message }));
+    }
+
+    info(message: string, options?: AlertOptions) {
+        this.alert(new Alert({ ...options, type: AlertType.Info, message }));
+    }
+
+    warn(message: string, options?: AlertOptions) {
+        this.alert(new Alert({ ...options, type: AlertType.Warning, message }));
+    }
+
+    alert(alert: Alert) {
+        alert.id = alert.id || this.defaultId;
+        alert.autoClose = (alert.autoClose === undefined) ? true : alert.autoClose;
+        this.subject.next(alert);
+    }
+
+    clear(id = this.defaultId) {
+        this.subject.next(new Alert({ id }));
+    }
 }
