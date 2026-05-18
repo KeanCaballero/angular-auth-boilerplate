@@ -1,8 +1,18 @@
 # IPT 2026 Angular Frontend
 
-Angular 21 Auth Boilerplate — Email Sign Up with Verification, Authentication & Forgot Password.
+Angular 19 Auth Boilerplate — Email Sign Up with Verification, Authentication & Forgot Password.
+
+## 🚀 Live Demo
+
+| | Link |
+|---|---|
+| **Frontend App** | [https://ipt-2026-frontend.vercel.app/](https://ipt-2026-frontend.vercel.app/) |
+| **Backend API** | [https://ipt-2026-backend.vercel.app/](https://ipt-2026-backend.vercel.app/) |
+
+---
 
 ## Features
+
 - Email sign up & verification
 - JWT authentication with refresh tokens (auto-renews 1 min before expiry)
 - Role-based access (Admin / User)
@@ -11,16 +21,20 @@ Angular 21 Auth Boilerplate — Email Sign Up with Verification, Authentication 
 - Admin panel — manage all accounts
 - **Fake backend** (enabled in dev, disabled in production)
 
+---
+
 ## Quick Start (Local)
 
 ```bash
+git clone https://github.com/KeanCaballero/angular-auth-boilerplate.git
+cd angular-auth-boilerplate
 npm install
 npm start
 # → http://localhost:4200
 ```
 
-The app runs with a **fake backend** by default — no real API needed.  
-After registering, a "verification email" link appears on-screen — click it to verify.  
+The app runs with a **fake backend** by default — no real API needed.
+After registering, a "verification email" link appears on-screen — click it to verify.
 The **first account** created becomes Admin.
 
 ---
@@ -42,9 +56,10 @@ src/app/
 ├── app.component.*     root component + nav bar
 ├── app.module.ts       root module (fake backend toggle)
 └── app-routing.module.ts
+
 src/environments/
 ├── environment.ts          dev  → http://localhost:4000
-└── environment.prod.ts     prod → https://ipt-2026-backend.onrender.com
+└── environment.prod.ts     prod → https://ipt-2026-backend.vercel.app
 ```
 
 ---
@@ -54,8 +69,7 @@ src/environments/
 When running against the real Node.js/MySQL API, the fake backend is automatically
 disabled in production builds (`environment.production === true`).
 
-For local development against a real backend, remove `fakeBackendProvider` from
-`src/app/app.module.ts`.
+For local development against a real backend, remove `fakeBackendProvider` from `src/app/app.module.ts`.
 
 ---
 
@@ -68,36 +82,31 @@ npm run build
 
 ---
 
-## Deploy to Render (Static Site)
+## Deploy to Vercel (Static Site)
 
 | Setting | Value |
 |---------|-------|
-| Service type | Static Site |
+| Framework Preset | Angular |
 | Branch | main |
-| Build command | `npm ci && npm run build` |
-| Publish directory | `dist/ipt-2026-frontend` |
+| Build Command | `npm run build` |
+| Output Directory | `dist/ipt-2026-frontend` |
 
-**SPA Routing (required):**  
-Render → Redirects/Rewrites → Add rule:
-- Source: `/*`
-- Destination: `/index.html`
-- Action: **Rewrite** *(not Redirect — Rewrite is required for email verify links to work)*
+**SPA Routing (required):** Add a `vercel.json` in the root:
+
+```json
+{
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+}
+```
 
 ---
 
 ## Environment Variables
 
 Production `environment.prod.ts` points to:
-```
-apiUrl: 'https://ipt-2026-backend.onrender.com'
-```
-Update this to your own deployed backend URL before deploying.
 
-### Backend must have (for cookie auth to work):
-```
-CORS_ORIGIN=https://<your-render-frontend-domain>
-COOKIE_SECURE=true
-COOKIE_SAMESITE=lax
+```ts
+apiUrl: 'https://ipt-2026-backend.vercel.app'
 ```
 
 ---
